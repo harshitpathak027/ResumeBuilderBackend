@@ -1,1 +1,7 @@
+/Users/harshitpathak/Desktop/ResumeBuilder/ResumeBuilderBackend/src/main/java/com/example/ResumeBuilder/DTO/TemplateDTO.java
 /Users/harshitpathak/Desktop/ResumeBuilder/ResumeBuilderBackend/src/main/java/com/example/ResumeBuilder/ResumeBuilderApplication.java
+/Users/harshitpathak/Desktop/ResumeBuilder/ResumeBuilderBackend/src/main/java/com/example/ResumeBuilder/config/OpenApiConfig.java
+/Users/harshitpathak/Desktop/ResumeBuilder/ResumeBuilderBackend/src/main/java/com/example/ResumeBuilder/controller/TemplateController.java
+/Users/harshitpathak/Desktop/ResumeBuilder/ResumeBuilderBackend/src/main/java/com/example/ResumeBuilder/model/Template.java
+/Users/harshitpathak/Desktop/ResumeBuilder/ResumeBuilderBackend/src/main/java/com/example/ResumeBuilder/repository/TemplateRepository.java
+/Users/harshitpathak/Desktop/ResumeBuilder/ResumeBuilderBackend/src/main/java/com/example/ResumeBuilder/service/TemplateService.java
