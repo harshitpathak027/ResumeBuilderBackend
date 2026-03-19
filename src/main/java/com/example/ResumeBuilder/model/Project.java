@@ -41,6 +41,9 @@ public class Project {
     @Column(name = "repo_url", length = 255, nullable = false)
     private String repoUrl;
 
+    @Column(name = "technologies", columnDefinition = "TEXT", nullable = false)
+    private String technologies;
+
     @Column(name = "sort_order", nullable = false)
     private Integer sortOrder;
 
@@ -48,7 +51,7 @@ public class Project {
     }
 
     public Project(UUID id, Resume resume, String projectName, String description, String startDate, String endDate,
-            String liveUrl, String repoUrl, Integer sortOrder) {
+            String liveUrl, String repoUrl, String technologies, Integer sortOrder) {
         this.id = id;
         this.resume = resume;
         this.projectName = projectName;
@@ -57,6 +60,7 @@ public class Project {
         this.endDate = endDate;
         this.liveUrl = liveUrl;
         this.repoUrl = repoUrl;
+        this.technologies = technologies;
         this.sortOrder = sortOrder;
     }
 
@@ -122,6 +126,14 @@ public class Project {
 
     public void setRepoUrl(String repoUrl) {
         this.repoUrl = repoUrl;
+    }
+
+    public String getTechnologies() {
+        return technologies;
+    }
+
+    public void setTechnologies(String technologies) {
+        this.technologies = technologies;
     }
 
     public Integer getSortOrder() {
