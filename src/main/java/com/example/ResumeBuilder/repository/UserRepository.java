@@ -7,5 +7,6 @@ import com.example.ResumeBuilder.model.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long>{
-    
+    User findByName(String username);
+    User findByNameIgnoreCaseOrEmailIgnoreCase(String name, String email);
 }

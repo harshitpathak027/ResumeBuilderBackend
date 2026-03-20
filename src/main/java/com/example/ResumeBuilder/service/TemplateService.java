@@ -1,8 +1,8 @@
 package com.example.ResumeBuilder.service;
 
 import java.util.List;
+import java.util.Comparator;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +26,17 @@ public class TemplateService {
     }
 
     public List<Template> getAllTemplate() {
-        // TODO Auto-generated method stub
-        return templateRepository.findAll();
+        List<Template> templates = templateRepository.findAll();
+        templates.sort(
+            Comparator.comparing(
+                    Template::getName,
+                    Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER)
+                )
+                .thenComparing(
+                    Template::getDescription,
+                    Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER)
+                )
+        );
+        return templates;
     }
 }

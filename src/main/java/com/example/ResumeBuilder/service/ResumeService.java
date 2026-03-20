@@ -1,8 +1,8 @@
 package com.example.ResumeBuilder.service;
 
+import java.util.Comparator;
 import java.util.List;
 
-import org.jspecify.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -59,6 +59,8 @@ public class ResumeService {
     }
 
     public List<Resume> getResumeByUserId(Long userid) {
-        return resumeRepository.findByUserId(userid);
+        List<Resume>listResume =  resumeRepository.findByUserId(userid);
+        listResume.sort(Comparator.comparing(Resume::getUpdatedAt).reversed());
+        return listResume;
     }
 }
