@@ -1,10 +1,10 @@
 package com.example.ResumeBuilder.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.jdbc.core.JdbcTemplate;
+
+import java.util.regex.Pattern;
 
 import com.example.ResumeBuilder.model.User;
 import com.example.ResumeBuilder.repository.UserRepository;
@@ -12,16 +12,29 @@ import com.example.ResumeBuilder.repository.UserRepository;
 @Service
 public class UserService {
 
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$");
+
     @Autowired
     UserRepository userRepository;
 
     @Autowired
     PasswordEncoder passwordEncoder;
 
-    @Autowired
-    JdbcTemplate jdbcTemplate;
-
     public String registerUser(User user) {
+        if (user == null) {
+            throw new IllegalArgumentException("name, email and password are required");
+        }
+
+        if (isBlank(user.getName()) || isBlank(user.getEmail()) || isBlank(user.getPassword())) {
+            throw new IllegalArgumentException("name, email and password are required");
+        }
+
+        if (!EMAIL_PATTERN.matcher(user.getEmail().trim()).matches()) {
+            throw new IllegalArgumentException("Please enter a valid email");
+        }
+
+        user.setName(user.getName().trim());
+        user.setEmail(user.getEmail().trim());
         // user.setId(null);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
 
@@ -38,22 +51,8 @@ public class UserService {
         // }
     }
 
-    private boolean isUsersPrimaryKeySequenceIssue(DataIntegrityViolationException exception) {
-        String message = exception.getMostSpecificCause() != null
-                ? exception.getMostSpecificCause().getMessage()
-                : exception.getMessage();
-
-        if (message == null) {
-            return false;
-        }
-
-        String lower = message.toLowerCase();
-        return lower.contains("users_pkey") || lower.contains("key (id)");
-    }
-
-    private void resetUsersIdSequence() {
-        jdbcTemplate.execute(
-                "SELECT setval(pg_get_serial_sequence('users','id'), COALESCE((SELECT MAX(id) FROM users), 0), true)");
+    private boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
     }
     
 }

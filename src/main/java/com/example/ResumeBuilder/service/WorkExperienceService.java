@@ -16,6 +16,7 @@ public class WorkExperienceService {
     WorkExperienceRepository workExperienceRepository;
 
     public WorkExperience addWorkExperience(WorkExperience workExperience) {
+        validateWorkExperience(workExperience);
         if (workExperience.getSortOrder() == null) {
             workExperience.setSortOrder(0);
         }
@@ -31,6 +32,8 @@ public class WorkExperienceService {
     }
 
     public WorkExperience updateWorkExperience(UUID id, WorkExperience payload) {
+        validateWorkExperience(payload);
+
         WorkExperience existing = workExperienceRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Work experience not found: " + id));
 
@@ -49,5 +52,30 @@ public class WorkExperienceService {
 
     public void deleteWorkExperience(UUID id) {
         workExperienceRepository.deleteById(id);
+    }
+
+    private void validateWorkExperience(WorkExperience payload) {
+        if (payload == null) {
+            throw new IllegalArgumentException("Work experience payload is required");
+        }
+
+        if (payload.getResume() == null || payload.getResume().getId() == null) {
+            throw new IllegalArgumentException("resume.id is required");
+        }
+
+        if (isBlank(payload.getJobTitle()) || isBlank(payload.getCompany()) || isBlank(payload.getLocation())
+                || isBlank(payload.getStartDate()) || isBlank(payload.getEndDate())
+                || isBlank(payload.getDescription())) {
+            throw new IllegalArgumentException(
+                    "jobTitle, company, location, startDate, endDate and description are required");
+        }
+
+        if (payload.getIsCurrent() == null) {
+            throw new IllegalArgumentException("isCurrent is required");
+        }
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
     }
 }

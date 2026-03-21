@@ -34,6 +34,10 @@ public class PersonalService {
             throw new IllegalArgumentException("resumeId is required");
         }
 
+        if (isBlank(payload.getFirstName()) || isBlank(payload.getLastName()) || isBlank(payload.getEmail())) {
+            throw new IllegalArgumentException("firstName, lastName and email are required");
+        }
+
         Resume resume = resumeRepository.findById(resumeId)
                 .orElseThrow(() -> new IllegalArgumentException("Resume not found for id: " + resumeId));
 
@@ -52,6 +56,10 @@ public class PersonalService {
         target.setProfessionalSummary(payload.getProfessionalSummary());
 
         return personalRepository.save(target);
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
     }
     
 }

@@ -16,6 +16,7 @@ public class EducationService {
     EducationRepository educationRepository;
 
     public Education addEducation(Education education) {
+        validateEducation(education);
         return educationRepository.save(education);
     }
 
@@ -28,6 +29,8 @@ public class EducationService {
     }
 
     public Education updateEducation(UUID id, Education payload) {
+        validateEducation(payload);
+
         Education existing = educationRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Education not found: " + id));
 
@@ -54,6 +57,31 @@ public class EducationService {
             throw new IllegalArgumentException("Education not found: " + id);
         }
         educationRepository.deleteById(id);
+    }
+
+    private void validateEducation(Education payload) {
+        if (payload == null) {
+            throw new IllegalArgumentException("Education payload is required");
+        }
+
+        if (payload.getResume() == null || payload.getResume().getId() == null) {
+            throw new IllegalArgumentException("resume.id is required");
+        }
+
+        if (isBlank(payload.getSchool()) || isBlank(payload.getDegree()) || isBlank(payload.getField())
+                || isBlank(payload.getLocation()) || isBlank(payload.getStartDate()) || isBlank(payload.getEndDate())
+                || isBlank(payload.getGpa()) || isBlank(payload.getAchievements())) {
+            throw new IllegalArgumentException(
+                    "school, degree, field, location, startDate, endDate, gpa and achievements are required");
+        }
+
+        if (payload.getIsCurrent() == null) {
+            throw new IllegalArgumentException("isCurrent is required");
+        }
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
     }
     
 }

@@ -21,6 +21,7 @@ public class ProjectService {
     ResumeRepository resumeRepository;
 
     public Project addProject(Project project) {
+        validateProject(project);
         Resume resume = resolveResume(project);
         project.setResume(resume);
 
@@ -42,6 +43,8 @@ public class ProjectService {
     }
 
     public Project updateProject(UUID id, Project payload) {
+        validateProject(payload);
+
         Project existing = projectRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Project not found: " + id));
 
@@ -71,5 +74,26 @@ public class ProjectService {
         Long resumeId = project.getResume().getId();
         return resumeRepository.findById(resumeId)
                 .orElseThrow(() -> new IllegalArgumentException("Resume not found: " + resumeId));
+    }
+
+    private void validateProject(Project payload) {
+        if (payload == null) {
+            throw new IllegalArgumentException("Project payload is required");
+        }
+
+        if (payload.getResume() == null || payload.getResume().getId() == null) {
+            throw new IllegalArgumentException("resume.id is required");
+        }
+
+        if (isBlank(payload.getProjectName()) || isBlank(payload.getDescription()) || isBlank(payload.getTechnologies())
+                || isBlank(payload.getStartDate()) || isBlank(payload.getEndDate()) || isBlank(payload.getLiveUrl())
+                || isBlank(payload.getRepoUrl())) {
+            throw new IllegalArgumentException(
+                    "projectName, description, technologies, startDate, endDate, liveUrl and repoUrl are required");
+        }
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
     }
 }
