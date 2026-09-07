@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.example.ResumeBuilder.DTO.ResumeCreateDTO;
 import com.example.ResumeBuilder.DTO.ResumeResponseDTO;
@@ -12,8 +13,14 @@ import com.example.ResumeBuilder.model.Resume;
 import com.example.ResumeBuilder.model.Template;
 import com.example.ResumeBuilder.model.User;
 import com.example.ResumeBuilder.repository.ResumeRepository;
+import com.example.ResumeBuilder.repository.EducationRepository;
+import com.example.ResumeBuilder.repository.PersonalRepository;
+import com.example.ResumeBuilder.repository.ProjectRepository;
+import com.example.ResumeBuilder.repository.ProjectTechRepository;
+import com.example.ResumeBuilder.repository.SkillRepository;
 import com.example.ResumeBuilder.repository.TemplateRepository;
 import com.example.ResumeBuilder.repository.UserRepository;
+import com.example.ResumeBuilder.repository.WorkExperienceRepository;
 
 @Service
 public class ResumeService {
@@ -26,6 +33,24 @@ public class ResumeService {
 
     @Autowired
     private TemplateRepository templateRepository;
+
+    @Autowired
+    private PersonalRepository personalRepository;
+
+    @Autowired
+    private EducationRepository educationRepository;
+
+    @Autowired
+    private WorkExperienceRepository workExperienceRepository;
+
+    @Autowired
+    private SkillRepository skillRepository;
+
+    @Autowired
+    private ProjectRepository projectRepository;
+
+    @Autowired
+    private ProjectTechRepository projectTechRepository;
 
     public ResumeResponseDTO createResume(ResumeCreateDTO resumeCreateDTO) {
         if (resumeCreateDTO.getUserId() == null) {
@@ -62,5 +87,24 @@ public class ResumeService {
         List<Resume>listResume =  resumeRepository.findByUserId(userid);
         listResume.sort(Comparator.comparing(Resume::getUpdatedAt).reversed());
         return listResume;
+    }
+
+    @Transactional
+    public void deleteResume(Long resumeId, Long userId) {
+        Resume resume = resumeRepository.findById(resumeId)
+                .orElseThrow(() -> new IllegalArgumentException("Resume not found"));
+        if (resume.getUser() == null || !resume.getUser().getId().equals(userId)) {
+            throw new IllegalArgumentException("Resume does not belong to this user");
+        }
+
+        projectRepository.findByResumeId(resumeId).forEach(project -> {
+            if (project.getId() != null) projectTechRepository.deleteByProjectId(project.getId());
+        });
+        projectRepository.deleteByResumeId(resumeId);
+        educationRepository.deleteByResumeId(resumeId);
+        workExperienceRepository.deleteByResumeId(resumeId);
+        skillRepository.deleteByResumeId(resumeId);
+        personalRepository.deleteByResumeId(resumeId);
+        resumeRepository.delete(resume);
     }
 }

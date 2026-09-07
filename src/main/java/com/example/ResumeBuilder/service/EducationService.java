@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.ResumeBuilder.model.Education;
+import com.example.ResumeBuilder.model.Resume;
 import com.example.ResumeBuilder.repository.EducationRepository;
+import com.example.ResumeBuilder.repository.ResumeRepository;
 
 
 @Service
@@ -15,8 +17,17 @@ public class EducationService {
     @Autowired
     EducationRepository educationRepository;
 
+    @Autowired
+    ResumeRepository resumeRepository;
+
     public Education addEducation(Education education) {
         validateEducation(education);
+        Resume resume = resumeRepository.findById(education.getResume().getId())
+                .orElseThrow(() -> new IllegalArgumentException("Resume not found: " + education.getResume().getId()));
+        education.setResume(resume);
+        if (education.getSortOrder() == null) {
+            education.setSortOrder(0);
+        }
         return educationRepository.save(education);
     }
 

@@ -6,14 +6,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import com.example.ResumeBuilder.DTO.ResumeCreateDTO;
 import com.example.ResumeBuilder.DTO.ResumeResponseDTO;
 import com.example.ResumeBuilder.service.ResumeService;
+import com.example.ResumeBuilder.config.UserPrincipal;
 
 @RestController
 public class ResumeController {
@@ -34,5 +37,15 @@ public class ResumeController {
     @GetMapping("/resumes/user/{userid}")
     public ResponseEntity<?> getResumeByUserId(@PathVariable Long userid) {
             return ResponseEntity.status(200).body(resumeService.getResumeByUserId(userid));
+    }
+
+    @DeleteMapping("/resumes/{id}")
+    public ResponseEntity<?> deleteResume(@PathVariable Long id, @AuthenticationPrincipal UserPrincipal principal) {
+        try {
+            resumeService.deleteResume(id, principal.getUser().getId());
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
     }
 }
